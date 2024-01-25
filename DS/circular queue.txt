@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_SIZE 10
+struct CircularQueue {
+ int items[MAX_SIZE];
+ int front, rear;
+};
+void initializeQueue(struct CircularQueue *queue);
+void enqueue(struct CircularQueue *queue, int element);
+int dequeue(struct CircularQueue *queue);
+int isEmpty(struct CircularQueue *queue);
+int isFull(struct CircularQueue *queue);
+void displayQueue(struct CircularQueue *queue);
+int main() {
+ struct CircularQueue queue;
+ initializeQueue(&queue);
+ enqueue(&queue, 1);
+ enqueue(&queue, 2);
+ enqueue(&queue, 3);
+ printf("Initial Queue: ");
+ displayQueue(&queue);
+ int dequeuedElement = dequeue(&queue);
+ printf("Dequeued Element: %d\n", dequeuedElement);
+ printf("Updated Queue: ");
+ displayQueue(&queue);
+ return 0;
+}
+void initializeQueue(struct CircularQueue *queue) {
+ queue->front = -1;
+ queue->rear = -1;
+}
+void enqueue(struct CircularQueue *queue, int element) {
+ if (isFull(queue)) {
+ printf("Error: Queue is full.\n");
+ return;
+ }
+if (isEmpty(queue)) {
+ queue->front = 0;
+ }
+queue->rear = (queue->rear + 1) % MAX_SIZE;
+queue->items[queue->rear] = element;
+ printf("Enqueued %d\n", element);
+}
+int dequeue(struct CircularQueue *queue) {
+if (isEmpty(queue)) {
+ printf("Error: Queue is empty.\n");
+ return -1; 
+ }
+int dequeuedElement = queue->items[queue->front];
+if (queue->front == queue->rear) {
+ initializeQueue(queue);
+ } else {
+ queue->front = (queue->front + 1) % MAX_SIZE;
+ }
+return dequeuedElement;
+}
+int isEmpty(struct CircularQueue *queue) {
+ return (queue->front == -1);
+}
+int isFull(struct CircularQueue *queue) {
+ return ((queue->rear + 1) % MAX_SIZE == queue->front);
+}
+void displayQueue(struct CircularQueue *queue) {
+ if (isEmpty(queue)) {
+ printf("Queue is empty.\n");
+ return;
+ }
+int index = queue->front;
+printf("Queue: ");
+do {
+ printf("%d ", queue->items[index]);
+ index = (index + 1) % MAX_SIZE;
+ } while (index != (queue->rear + 1) % MAX_SIZE);
+ printf("\n");
+}
+OUTPUT 
+Enqueued 1
+Enqueued 2
+Enqueued 3
+Initial Queue: Queue: 1 2 3 
+Dequeued Element: 1
+Updated Queue: Queue: 2 3

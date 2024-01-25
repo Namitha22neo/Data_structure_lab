@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_VERTICES 100
+typedef struct Node {
+ int vertex;
+ struct Node* next;
+} Node;
+typedef struct {
+ Node* head;
+} AdjList;
+typedef struct {
+ int numVertices;
+ AdjList* array;
+} Graph;
+Node* createNode(int vertex) {
+ Node* newNode = (Node*)malloc(sizeof(Node));
+ newNode->vertex = vertex;
+ newNode->next = NULL;
+ return newNode;
+}
+Graph* createGraph(int numVertices) {
+ Graph* graph = (Graph*)malloc(sizeof(Graph));
+ graph->numVertices = numVertices;
+ graph->array = (AdjList*)malloc(numVertices * sizeof(AdjList));
+ for (int i = 0; i < numVertices; i++) {
+ graph->array[i].head = NULL;
+ }
+
+return graph;
+}
+void addEdge(Graph* graph, int start, int end) {
+ Node* newNode = createNode(end);
+ newNode->next = graph->array[start].head;
+ graph->array[start].head = newNode;
+}
+void DFS(Graph* graph, int vertex, int visited[], int* stack, int* stackIndex) {
+ visited[vertex] = 1;
+Node* current = graph->array[vertex].head;
+ while (current != NULL) {
+ if (!visited[current->vertex]) {
+ DFS(graph, current->vertex, visited, stack, stackIndex);
+ }
+ current = current->next;
+ }
+stack[(*stackIndex)++] = vertex;
+}
+void topologicalSort(Graph* graph) {
+ int visited[MAX_VERTICES] = {0};
+ int stack[MAX_VERTICES];
+ int stackIndex = 0;
+for (int i = 0; i < graph->numVertices; i++) {
+ if (!visited[i]) {
+ DFS(graph, i, visited, stack, &stackIndex);
+ }
+ }
+printf("Topological Order: ");
+ while (stackIndex > 0) {
+ printf("%d ", stack[--stackIndex]);
+ } printf("\n");
+}
+int main() {
+ int numVertices, numEdges;
+printf("Enter the number of vertices: ");
+ scanf("%d", &numVertices);
+Graph* graph = createGraph(numVertices);
+printf("Enter the number of edges: ");
+scanf("%d", &numEdges);
+printf("Enter edge information (start vertex, end vertex):\n");
+for (int i = 0; i < numEdges; i++) {
+ int start, end;
+ scanf("%d %d", &start, &end);
+ addEdge(graph, start, end);
+ }
+ topologicalSort(graph);
+ free(graph->array);
+ free(graph);
+return 0;
+}
+OUTPUT
+Enter the number of vertices: 6
+Enter the number of edges: 6
+Enter edge information (start vertex, end vertex):
+5 2
+5 0
+4 0
+4 1
+2 3
+3 1
+Topological Order: 5 4 2 3 1 0

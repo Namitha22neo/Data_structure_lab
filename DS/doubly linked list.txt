@@ -1,0 +1,203 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct Node {
+ int data;
+ struct Node* next;
+ struct Node* prev;
+};
+struct LinkedList {
+ struct Node* head;
+ struct Node* tail;
+};
+void initializeList(struct LinkedList* list) {
+ list->head = NULL;
+ list->tail = NULL;
+}
+void insertAtBeginning(struct LinkedList* list, int element) {
+ struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+ newNode->data = element;
+ newNode->next = list->head;
+ newNode->prev = NULL;
+ if (list->head == NULL) {
+ list->head = newNode;
+ list->tail = newNode;
+ } else {
+ list->head->prev = newNode;
+ list->head = newNode;
+ }
+}
+void insertAtEnd(struct LinkedList* list, int element) {
+ struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+ newNode->data = element;
+ newNode->next = NULL;
+ newNode->prev = list->tail;
+ if (list->tail == NULL) {
+ list->head = newNode;
+list->tail = newNode;
+ } else {
+ list->tail->next = newNode;
+ list->tail = newNode;
+ }
+}
+void insertAtPosition(struct LinkedList* list, int element, int position) {
+ if (position == 1) {
+ insertAtBeginning(list, element);
+ } else if (position == getSize(list) + 1) {
+ insertAtEnd(list, element);
+ } else {
+ struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+ newNode->data = element;
+ struct Node* current = list->head;
+ int currentPosition = 1;
+ while (currentPosition < position - 1) {
+ current = current->next;
+ currentPosition++;
+ }
+newNode->next = current->next;
+ newNode->prev = current;
+ current->next->prev = newNode;
+ current->next = newNode;
+ }
+}
+int deleteAtBeginning(struct LinkedList* list) {
+ if (list->head == NULL) {
+ printf("Error: List is empty\n");
+ return -1; 
+ }
+int deletedElement = list->head->data;
+if (list->head == list->tail) {
+ free(list->head);
+ list->head = NULL;
+ list->tail = NULL;
+ } else {
+ struct Node* newHead = list->head->next;
+ newHead->prev = NULL;
+ free(list->head);
+ list->head = newHead;
+ }return deletedElement;
+}
+int deleteAtEnd(struct LinkedList* list) {
+ if (list->tail == NULL) {
+ printf("Error: List is empty\n");
+ return -1; 
+ }
+int deletedElement = list->tail->data;
+if (list->head == list->tail) {
+ free(list->tail);
+ list->head = NULL;
+ list->tail = NULL;
+ } else {
+ struct Node* newTail = list->tail->prev;
+ newTail->next = NULL;
+ free(list->tail);
+ list->tail = newTail;
+ }
+return deletedElement;
+}
+int deleteAtPosition(struct LinkedList* list, int position) {
+ if (list->head == NULL) {
+ printf("Error: List is empty\n");
+ return -1; 
+ }
+if (position == 1) {
+ return deleteAtBeginning(list);
+ } else if (position == getSize(list)) {
+ return deleteAtEnd(list);
+ } else {
+ struct Node* current = list->head;
+ int currentPosition = 1;
+ while (currentPosition < position) {
+ current = current->next;
+ currentPosition++;
+ }
+int deletedElement = current->data;
+ current->prev->next = current->next;
+ current->next->prev = current->prev;
+ free(current);
+return deletedElement;
+ }
+}
+DEPARTMENT OF COMPUTER APPLICATIONS 20MCA135 DATA STRUCTURES LAB
+20
+int searchElement(struct LinkedList* list, int element) {
+ struct Node* current = list->head;
+ int position = 1;
+while (current != NULL) {
+ if (current->data == element) {
+ return position;
+ }
+ current = current->next;
+ position++;
+ }
+ printf("Element not found\n");
+ return -1
+}
+int getSize(struct LinkedList* list) {
+ struct Node* current = list->head;
+ int size = 0;
+ while (current != NULL) {
+ size++;
+ current = current->next;
+ }
+return size;
+}
+void displayList(struct LinkedList* list) {
+ if (list->head == NULL) {
+ printf("List is empty\n");
+ return;
+ }
+struct Node* current = list->head;
+ while (current != NULL) {
+ printf("%d ", current->data);
+ current = current->next;
+ }
+ printf("\n");
+}
+int main() {
+ struct LinkedList myList;
+ initializeList(&myList);
+ insertAtBeginning(&myList, 30);
+ insertAtBeginning(&myList, 20);
+ insertAtBeginning(&myList, 10);
+printf("List after insertions at the beginning: ");
+ displayList(&myList);
+DEPARTMENT OF COMPUTER APPLICATIONS 20MCA135 DATA STRUCTURES LAB
+21
+ insertAtEnd(&myList, 40);
+ insertAtEnd(&myList, 50);
+ printf("List after insertions at the end: ");
+ displayList(&myList);
+ insertAtPosition(&myList, 35, 4);
+ printf("List after insertion at position 4: ");
+ displayList(&myList);
+ int deletedElement = deleteAtBeginning(&myList);
+ printf("Deleted element at the beginning: %d\n", deletedElement);
+ printf("List after deletion at the beginning: ");
+ displayList(&myList);
+ deletedElement = deleteAtEnd(&myList);
+ printf("Deleted element at the end: %d\n", deletedElement);
+ printf("List after deletion at the end: ");
+ displayList(&myList);
+ deletedElement = deleteAtPosition(&myList, 3);
+ printf("Deleted element at position 3: %d\n", deletedElement);
+ printf("List after deletion at position 3: ");
+ displayList(&myList);
+ int position = searchElement(&myList, 40);
+ if (position != -1) {
+ printf("Element 40 found at position: %d\n", position);
+ }
+ return 0;
+}
+OUTPUT 
+List after insertions at the beginning: 10 20 30 
+List after insertions at the end: 10 20 30 40 50 
+List after insertion at position 4: 10 20 30 35 40 50 
+Deleted element at the beginning: 10
+List after deletion at the beginning: 20 30 35 40 50 
+Deleted element at the end: 50
+List after deletion at the end: 20 30 35 40 
+Deleted element at position 3: 35
+List after deletion at position 3: 20 30 40 
+Element 40 found at position: 3
+
+

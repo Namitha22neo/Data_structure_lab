@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_SIZE 1000 
+typedef struct {
+ int *parent;
+ int *rank;
+ int size;
+} DisjointSet;
+void initializeDisjointSet(DisjointSet *set, int maxSize) {
+ set->size = maxSize;
+ set->parent = (int *)malloc((maxSize + 1) * sizeof(int));
+ set->rank = (int *)calloc((maxSize + 1), sizeof(int));
+ for (int i = 0; i <= maxSize; i++) {
+ set->parent[i] = i;
+ }
+}
+void makeSet(DisjointSet *set, int element) {
+ set->parent[element] = element;
+ set->rank[element] = 0;}
+int find(DisjointSet *set, int element) {
+ if (set->parent[element] != element) {
+ set->parent[element] = find(set, set->parent[element]);
+ }
+ return set->parent[element];
+}void unionSets(DisjointSet *set, int element1, int element2) {
+ int root1 = find(set, element1);
+ int root2 = find(set, element2);
+if (root1 != root2) {
+if (set->rank[root1] > set->rank[root2]) {
+ set->parent[root2] = root1;
+ } else if (set->rank[root1] < set->rank[root2]) {
+ set->parent[root1] = root2;
+ } else {
+ set->parent[root2] = root1;
+ set->rank[root1]++;
+ }
+ }
+}
+void displaySets(DisjointSet *set) {
+ int *sets = (int *)malloc((set->size + 1) * sizeof(int));
+ for (int i = 0; i <= set->size; i++) {
+ sets[i] = find(set, i);
+ }
+ for (int i = 0; i <= set->size; i++) {
+ printf("Element %d belongs to Set %d\n", i, sets[i]);
+ }
+free(sets);}
+int main() {
+ DisjointSet disjointSet;
+ int maxSize = 20; 
+ initializeDisjointSet(&disjointSet, maxSize);
+for (int i = 0; i <= maxSize; i++) {
+ makeSet(&disjointSet, i);}
+ unionSets(&disjointSet, 1, 2);
+ unionSets(&disjointSet, 3, 4);
+ unionSets(&disjointSet, 5, 6);
+ unionSets(&disjointSet, 1, 4);
+ displaySets(&disjointSet);
+ free(disjointSet.parent);
+DEPARTMENT OF COMPUTER APPLICATIONS 20MCA135 DATA STRUCTURES LAB
+38
+ free(disjointSet.rank);
+return 0;}
+OUTPUT
+Element 0 belongs to Set 0
+Element 1 belongs to Set 1
+Element 2 belongs to Set 1
+Element 3 belongs to Set 3
+Element 4 belongs to Set 3
+Element 5 belongs to Set 5
+Element 6 belongs to Set 5
+Element 7 belongs to Set 7
+Element 8 belongs to Set 8
+Element 9 belongs to Set 9
+Element 10 belongs to Set 10
+Element 11 belongs to Set 11
+Element 12 belongs to Set 12
+Element 13 belongs to Set 13
+Element 14 belongs to Set 14
+Element 15 belongs to Set 15
+Element 16 belongs to Set 16
+Element 17 belongs to Set 17
+Element 18 belongs to Set 18
+Element 19 belongs to Set 19
+Element 20 belongs to Set 

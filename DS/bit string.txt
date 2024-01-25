@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_SIZE 1000 
+typedef struct {
+ int *bitString;
+ int size;
+} BitSet;
+void initializeSet(BitSet *set) {
+ printf("Enter the maximum element value: ");
+ scanf("%d", &(set->size));
+ set->bitString = (int *)calloc((set->size + 1) / (sizeof(int) * 8), sizeof(int));
+}
+void insertElement(BitSet *set, int element) {
+set->bitString[element / (sizeof(int) * 8)] |= (1 << (element % (sizeof(int) * 8)));
+}
+void deleteElement(BitSet *set, int element) {
+set->bitString[element / (sizeof(int) * 8)] &= ~(1 << (element % (sizeof(int) * 8)));
+}
+BitSet unionSets(BitSet setA, BitSet setB) {
+BitSet result;
+result.size = setA.size > setB.size ? setA.size : setB.size;
+result.bitString = (int *)malloc((result.size + 1) / (sizeof(int) * 8), sizeof(int));
+for (int i = 0; i <= result.size / (sizeof(int) * 8); i++) {
+ result.bitString[i] = setA.bitString[i] | setB.bitString[i];
+ }
+return result;
+}
+BitSet intersectionSets(BitSet setA, BitSet setB) {BitSet result;
+ result.size = setA.size < setB.size ? setA.size : setB.size;
+ result.bitString = (int *)malloc((result.size + 1) / (sizeof(int) * 8), sizeof(int));
+for (int i = 0; i <= result.size / (sizeof(int) * 8); i++) {
+result.bitString[i] = setA.bitString[i] & setB.bitString[i];
+ }
+return result;
+}
+BitSet differenceSets(BitSet setA, BitSet setB) {
+ BitSet result;
+ result.size = setA.size;
+ result.bitString = (int *)malloc((result.size + 1) / (sizeof(int) * 8), sizeof(int));
+for (int i = 0; i <= result.size / (sizeof(int) * 8); i++) {
+result.bitString[i] = setA.bitString[i] & ~setB.bitString[i];
+}
+return result;
+}
+void displaySet(BitSet set) {
+ printf("Elements in the set: ");
+ for (int i = 0; i <= set.size; i++) {
+ if (set.bitString[i / (sizeof(int) * 8)] & (1 << (i % (sizeof(int) * 8)))) {
+ printf("%d ", i);
+ }
+ }
+ printf("\n");
+}
+int main() {
+ BitSet setA, setB, resultSet;
+ initializeSet(&setA);
+ initializeSet(&setB);
+
+33
+ insertElement(&setA, 5);
+ insertElement(&setA, 10);
+ insertElement(&setA, 15);
+ insertElement(&setB, 10);
+ insertElement(&setB, 20);
+ resultSet = unionSets(setA, setB);
+ printf("Union of sets A and B:\n");
+ displaySet(resultSet);
+ resultSet = intersectionSets(setA, setB);
+ printf("Intersection of sets A and B:\n");
+ displaySet(resultSet);
+ resultSet = differenceSets(setA, setB);
+ printf("Difference of sets A and B:\n");
+ displaySet(resultSet);
+ free(setA.bitString);
+ free(setB.bitString);
+ free(resultSet.bitString);
+ return 0;
+}
+OUTPUT
+Enter the maximum element value: 20
+Union of sets A and B:
+Elements in the set: 5 10 15 20 
+Intersection of sets A and B:
+Elements in the set: 10 
+Difference of sets A and B:
+Elements in the set: 5 15
+

@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+struct Node {
+ int key;
+ struct Node* left;
+ struct Node* right;
+};
+struct BST {
+ struct Node* root;
+};
+void initializeBST(struct BST* bst) {
+ bst->root = NULL;
+}
+struct Node* createNode(int key) {
+ struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+ newNode->key = key;
+ newNode->left = NULL;
+ newNode->right = NULL;
+ return newNode;
+}
+struct Node* insert(struct Node* root, int key) {
+ if (root == NULL) {
+ return createNode(key);
+ }
+ if (key < root->key) {
+ root->left = insert(root->left, key);
+ } else if (key > root->key) {
+ root->right = insert(root->right, key);
+ } else {
+ printf("Error: Key %d already exists in the BST\n", key);
+ }
+return root;
+}
+struct Node* findMin(struct Node* node) {
+ while (node->left != NULL) {
+ node = node->left;
+ }
+ return node;
+}
+struct Node* deleteNode(struct Node* root, int key) {
+ if (root == NULL) {
+ printf("Error: Key %d not found in the BST\n", key);
+ return root;
+ }
+ if (key < root->key) {
+ root->left = deleteNode(root->left, key);
+ } else if (key > root->key) {
+ root->right = deleteNode(root->right, key);
+ } else {
+ if (root->left == NULL) {
+ struct Node* temp = root->right;
+ free(root);
+ return temp;
+ } else if (root->right == NULL) {
+ struct Node* temp = root->left;
+ free(root);
+ return temp;
+ }
+ struct Node* temp = findMin(root->right);
+ root->key = temp->key;
+ root->right = deleteNode(root->right, temp->key);
+ }
+ return root;
+}
+bool search(struct Node* root, int key) {
+ if (root == NULL) {
+ return false;
+ }
+
+26
+ if (key == root->key) {
+ return true;
+ } else if (key < root->key) {
+ return search(root->left, key);
+ } else {
+ return search(root->right, key);
+ }
+}
+void inOrderTraversal(struct Node* root) {
+ if (root != NULL) {
+ inOrderTraversal(root->left);
+ printf("%d ", root->key);
+ inOrderTraversal(root->right);
+ }
+}
+void preOrderTraversal(struct Node* root) {
+ if (root != NULL) {
+ printf("%d ", root->key);
+ preOrderTraversal(root->left);
+ preOrderTraversal(root->right);
+ }
+}
+void postOrderTraversal(struct Node* root) {
+ if (root != NULL) {
+ postOrderTraversal(root->left);
+ postOrderTraversal(root->right);
+ printf("%d ", root->key);
+ }
+}
+bool isBSTUtil(struct Node* root, struct Node* prev) {
+ if (root != NULL) {
+ if (!isBSTUtil(root->left, prev)) {
+ return false;
+ }
+ if (prev != NULL && root->key <= prev->key) {
+ return false;
+ }
+prev = root;
+return isBSTUtil(root->right, prev);
+
+27
+ }
+return true;
+}
+bool isBST(struct Node* root) {
+ struct Node* prev = NULL;
+ return isBSTUtil(root, prev);}
+int main() {
+ struct BST myBST;
+ initializeBST(&myBST);
+myBST.root = insert(myBST.root, 50);
+ insert(myBST.root, 30);
+ insert(myBST.root, 20);
+ insert(myBST.root, 40);
+ insert(myBST.root, 70);
+ insert(myBST.root, 60);
+ insert(myBST.root, 80);
+ printf("In-order traversal: ");
+ inOrderTraversal(myBST.root);
+ printf("\n");
+ printf("Pre-order traversal: ");
+ preOrderTraversal(myBST.root);
+ printf("\n");
+ printf("Post-order traversal: ");
+ postOrderTraversal(myBST.root);
+ printf("\n");
+ int searchKey = 40;
+ if (search(myBST.root, searchKey)) {
+ printf("Key %d found in the BST\n", searchKey);
+ } else {
+ printf("Key %d not found in the BST\n", searchKey);
+ }
+ int deleteKey = 30;
+ myBST.root = deleteNode(myBST.root, deleteKey);
+ printf("BST after deleting key %d\n", deleteKey);
+ printf("In-order traversal: ");
+ inOrderTraversal(myBST.root);
+ printf("\n");
+ if (isBST(myBST.root)) {
+ printf("The tree is a binary search tree\n");
+ } else {
+ printf("The tree is not a binary search tree\n");
+ }
+ return 0;}
+
+28
+OUTPUT
+In-order traversal: 20 30 40 50 60 70 80 
+Pre-order traversal: 50 30 20 40 70 60 80 
+Post-order traversal: 20 40 30 60 80 70 50 
+Key 40 found in the BST
+BST after deleting key 30
+In-order traversal: 20 40 50 60 70 80 
+The tree is a binary search tree
